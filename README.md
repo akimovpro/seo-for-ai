@@ -17,10 +17,46 @@ This skill packages the technical SEO playbook for that world into a single Clau
 
 ## Install
 
+**Claude Code (most complete — includes the `/seo-audit` slash command):**
+
 ```
 /plugin marketplace add akimovpro/seo-for-ai
 /plugin install seo-for-ai@seo-for-ai
 ```
+
+**Everything else (Codex CLI, Cursor, Windsurf, Copilot, Aider, Antigravity, …):**
+
+```sh
+# one-liner installer — auto-detects which agents this repo uses and drops
+# the right rules file in the right place. Safe: never overwrites.
+curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash
+
+# or, target a specific tool:
+curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --tool cursor
+
+# or, user-global (Codex / Cursor):
+curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --global
+
+# dry-run first if you want to see what it would do:
+curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --dry-run
+```
+
+### Per-tool install matrix
+
+| Tool | What lands where | One-shot audit |
+|---|---|---|
+| **Claude Code** | `/plugin install seo-for-ai@seo-for-ai` (skill + `/seo-audit` command) | `/seo-audit <url>` |
+| **Codex CLI** | `AGENTS.md` in repo root, or `~/.codex/AGENTS.md` for global | paste [audit-prompt.md](./dist/audit-prompt.md) |
+| **Antigravity** (Google) | `AGENTS.md` in repo root | paste [audit-prompt.md](./dist/audit-prompt.md) |
+| **Cursor** | `.cursor/rules/seo-for-ai.mdc` | paste [audit-prompt.md](./dist/audit-prompt.md) |
+| **Windsurf** | `.windsurf/rules/seo-for-ai.md` | paste [audit-prompt.md](./dist/audit-prompt.md) |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | paste [audit-prompt.md](./dist/audit-prompt.md) |
+| **Aider** | `CONVENTIONS.md` + `aider --read CONVENTIONS.md` | paste [audit-prompt.md](./dist/audit-prompt.md) |
+| **OpenCode / Devin / Jules / Continue** | `AGENTS.md` (most read it) | paste [audit-prompt.md](./dist/audit-prompt.md) |
+
+The cross-tool baseline is `AGENTS.md` — the de-facto standard since ~mid-2025
+and read by Codex CLI, OpenCode, Devin, Jules, Aider (via CONVENTIONS), Cursor
+(via `@AGENTS.md`), Antigravity, and several others.
 
 ## Usage
 

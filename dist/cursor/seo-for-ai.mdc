@@ -1,0 +1,63 @@
+---
+description: SEO/AEO/GEO rules — keep generated HTML, JSON-LD, robots.txt, and sitemaps friendly to AI agents (ChatGPT, Claude, Perplexity, Gemini) and classic search.
+globs: ["**/*.{tsx,jsx,ts,js,html,vue,svelte,astro,mdx,md}", "**/robots.txt", "**/sitemap*.{xml,ts,js}", "**/*sitemap*", "**/*robots*"]
+alwaysApply: false
+---
+
+# SEO for AI agents — Cursor rules
+
+AI agents fetch with primitive HTTP clients (curl-class), do NOT execute
+JavaScript, do NOT wait for hydration. GoogleBot caps initial HTML at ~2 MB.
+Bing is the substrate for most AI agents except Gemini.
+
+## Always do
+
+- Use semantic HTML5: `<main>`, `<nav>`, `<header>`, `<footer>`, `<article>`,
+  `<section>`. Exactly one `<h1>` per page.
+- Navigation with `<a href>`, never `<div onClick>`.
+- Server-render or pre-render any content that needs to be cited. SSG and
+  plain SSR > SSR-with-hydration > CSR.
+- Add `<link rel="canonical">` on every page.
+- Add JSON-LD for any recognizable entity (Product, Article, Organization,
+  FAQPage, HowTo, BreadcrumbList, LocalBusiness, SoftwareApplication). Every
+  value must match the visible content.
+- Per-page `dateModified` in JSON-LD; per-URL real `<lastmod>` in
+  `sitemap.xml` (never the build timestamp).
+- `hreflang` reciprocal on multilingual sites.
+- Open Graph tags for previews.
+
+## Never do
+
+- Don't render primary content only via JavaScript.
+- Don't hide FAQ answers behind click-to-expand-only — render expanded by
+  default and toggle visibility with a class.
+- Don't add `<meta name="robots" content="noindex">` unless explicitly asked.
+- Don't write JSON-LD values that disagree with the visible page (deceptive
+  markup → demoted).
+- Don't propose mass AI-generated multilingual blog content — flagged as
+  slop since spring 2025.
+- Don't inline large base64 images / state blobs that push initial HTML past
+  2 MB.
+- Don't serve different primary content to bots vs humans (cloaking → full
+  site demotion). Class-only visibility differences are fine.
+
+## robots.txt defaults
+
+Allow `Googlebot`, `Bingbot`, `OAI-SearchBot`, `ChatGPT-User`,
+`PerplexityBot`, `Perplexity-User`, `Claude-Web`, `Claude-User`, `Applebot`.
+Reference `sitemap.xml`. If behind Cloudflare, verify "Block AI scrapers" is
+off (it's default-on for new sites).
+
+## Bing & IndexNow
+
+Always set up Bing Webmaster Tools — its AI Performance dashboard is the only
+place to see real AI citations today. Configure IndexNow for instant
+update propagation.
+
+## Reference
+
+Full skill, JSON-LD templates, robots.txt recipes, audit checklist:
+<https://github.com/akimovpro/seo-for-ai>
+
+For a full audit, paste the prompt from
+<https://github.com/akimovpro/seo-for-ai/blob/main/dist/audit-prompt.md>.

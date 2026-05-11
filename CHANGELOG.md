@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.2.0] — 2026-05-11
+
+### Added — works in every coding agent, not just Claude Code
+- `AGENTS.md` at repo root — the cross-tool standard. Picked up by Codex CLI,
+  OpenCode, Devin, Jules, Antigravity, Continue, and via `@AGENTS.md` in Cursor.
+- `dist/cursor/seo-for-ai.mdc` — Cursor MDC rule file (glob-scoped to HTML /
+  JSX / Astro / Vue / Svelte / sitemap / robots files).
+- `dist/windsurf/seo-for-ai.md` — Windsurf rules file.
+- `dist/copilot/copilot-instructions.md` — `.github/copilot-instructions.md`
+  content for GitHub Copilot.
+- `dist/audit-prompt.md` — universal copy-paste audit prompt for tools without
+  a native skill system (ChatGPT web, etc.).
+- `install.sh` — one-liner installer with auto-detection, `--tool` selector,
+  `--global` scope, `--dry-run`, safe-by-default (never overwrites).
+
+### Changed
+- README install section is now a per-tool matrix covering Claude Code,
+  Codex CLI, Antigravity, Cursor, Windsurf, Copilot, Aider, OpenCode,
+  Devin, Jules, Continue.
+
 ## [1.1.0] — 2026-05-11
 
 ### Added

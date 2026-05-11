@@ -8,14 +8,14 @@
   },
   "metadata": {
     "description": "Modern SEO / AEO / GEO skill for AI-agent visibility — audit & optimize sites so ChatGPT, Claude, Perplexity, Gemini, Bing and classic search can fetch, parse, trust, and cite them.",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
       "name": "seo-for-ai",
       "source": "./",
       "description": "Audit and optimize websites for AI agent visibility (AEO/GEO) alongside classic SEO. Covers static-first render path, semantic HTML, JSON-LD templates, robots.txt / bot policy matrix, Cloudflare AI-bot gotcha, 2 MB byte cap, FAQ extractability patterns, Bing Webmaster Tools, IndexNow, llms.txt, NLWeb, MCP, and the agent-payments roadmap (x402 / ACP / AP2 / UCP).",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": {
         "name": "Igor Akimov"
       },
