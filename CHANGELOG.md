@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.2.1] — 2026-05-11
+
+### Fixed
+- `install.sh` no longer crashes with `BASH_SOURCE[0]: unbound variable` when
+  run via `curl ... | bash`. Dropped `set -u` (BASH_SOURCE is unset under a
+  curl pipe).
+- `install.sh` detection logic was buggy due to `&&`/`||` precedence in
+  shell — Copilot was triggering off the `gh` binary alone, and Codex /
+  Antigravity weren't probing for installed apps. Rewrote each detector as
+  an explicit `if`.
+- AGENTS.md is now **always** written in the current directory regardless of
+  what's detected. It's the cross-tool baseline (Codex CLI, Antigravity,
+  OpenCode, Devin, Jules, Continue all read it); skipping it when no markers
+  were found made the installer feel like it "didn't find" Codex.
+- Removed the speculative `.antigravity/rules/` write — Antigravity reads
+  `AGENTS.md` at repo root, which is already covered.
+- Better detection: Codex by `command -v codex` or `~/.codex/`;
+  Antigravity by `/Applications/Antigravity.app` or `~/.antigravity/` or
+  `~/Library/Application Support/Antigravity/`; Cursor / Windsurf likewise.
+
+### Changed
+- Installer header now prints which tools were detected and where each tool's
+  file will land, so the user can verify before / after.
+
 ## [1.2.0] — 2026-05-11
 
 ### Added — works in every coding agent, not just Claude Code
