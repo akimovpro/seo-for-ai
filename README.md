@@ -8,98 +8,45 @@ This repo packages that playbook as a portable agent skill — install it in wha
 
 ## Install
 
-Pick your agent. Native plugin systems first, fallback installer at the bottom for tools that don't have one yet.
+### The easiest way — let your agent do it
 
-### Claude Code
-
-```
-/plugin marketplace add akimovpro/seo-for-ai
-/plugin install seo-for-ai@seo-for-ai
-```
-
-Includes the `/seo-audit` slash command.
-
-### Codex CLI
+Paste this into Claude Code, Codex CLI, Cursor, Gemini CLI, OpenCode, Aider,
+Antigravity, or any AI coding agent with filesystem access:
 
 ```
-/plugins
+Install the seo-for-ai skill for me: https://github.com/akimovpro/seo-for-ai
 ```
 
-Then search for **seo-for-ai** and install. (Or add via marketplace URL: `https://github.com/akimovpro/seo-for-ai`.)
+The agent figures out where its skills directory is and clones the repo
+there. Works everywhere.
 
-### Cursor
+### Native plugin marketplaces (preferred — gives you `update`)
 
-```
-/add-plugin akimovpro/seo-for-ai
-```
+| Agent | Command |
+|---|---|
+| Claude Code | `/plugin marketplace add akimovpro/seo-for-ai` → `/plugin install seo-for-ai@seo-for-ai` |
+| Codex CLI | `/plugins` → seo-for-ai |
+| Cursor | `/add-plugin akimovpro/seo-for-ai` |
+| Gemini CLI | `gemini extensions install https://github.com/akimovpro/seo-for-ai` |
+| Factory Droid | `droid plugin install seo-for-ai@seo-for-ai` |
+| OpenCode | edit `opencode.json` plugin array — see [.opencode/INSTALL.md](./.opencode/INSTALL.md) |
 
-### Gemini CLI
+### Fallback — shell installer
 
-```
-gemini extensions install https://github.com/akimovpro/seo-for-ai
-```
-
-### Factory Droid
-
-```
-droid plugin marketplace add https://github.com/akimovpro/seo-for-ai
-droid plugin install seo-for-ai@seo-for-ai
-```
-
-### OpenCode
-
-Add to `~/.config/opencode/opencode.json` (or project-level):
-
-```json
-{
-  "plugin": ["seo-for-ai@git+https://github.com/akimovpro/seo-for-ai.git"]
-}
-```
-
-See [.opencode/INSTALL.md](./.opencode/INSTALL.md) for pinning, troubleshooting.
-
-### Antigravity (Google)
-
-Antigravity reads `AGENTS.md` from the repo root. Run the fallback installer below — it drops `AGENTS.md` in the current directory.
-
-### Windsurf, GitHub Copilot, Aider — fallback installer
-
-These don't have a plugin marketplace today. Use the one-liner installer; it
-auto-detects which agents you have, writes the right rule file in the right
-place, and never overwrites an existing file.
+For Antigravity, Windsurf, GitHub Copilot, Aider (no plugin marketplaces yet):
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash
-
-# preview first:
-curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --dry-run
-
-# force every supported format:
-curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --all
-
-# also write user-global rules (~/.codex/AGENTS.md, ~/.cursor/rules/):
-curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --global
 ```
 
-### ChatGPT web / any chat without a skill system
+Auto-detects what's installed, writes the right rule file in the right place,
+never overwrites. Add `--dry-run`, `--all`, or `--tool <name>`.
 
-Copy-paste the prompt from [dist/audit-prompt.md](./dist/audit-prompt.md) into the conversation, optionally substituting `<URL>` with the page you want audited.
+### ChatGPT web / any chat without filesystem access
 
-## Install matrix at a glance
+Copy-paste [dist/audit-prompt.md](./dist/audit-prompt.md) into the conversation.
 
-| Agent | Install command | What lands |
-|---|---|---|
-| Claude Code | `/plugin install seo-for-ai@seo-for-ai` | full skill + `/seo-audit` |
-| Codex CLI | `/plugins` → seo-for-ai | full skill |
-| Cursor | `/add-plugin akimovpro/seo-for-ai` | full skill + commands |
-| Gemini CLI | `gemini extensions install <repo url>` | full skill via `GEMINI.md` |
-| OpenCode | edit `opencode.json` plugin array | full skill |
-| Factory Droid | `droid plugin marketplace add` | full skill |
-| Antigravity | fallback installer → `AGENTS.md` | universal baseline |
-| Windsurf | fallback installer → `.windsurf/rules/` | rules |
-| GitHub Copilot | fallback installer → `.github/copilot-instructions.md` | rules |
-| Aider | fallback installer → `CONVENTIONS.md` | rules + use `--read` |
-| ChatGPT / web | copy-paste [dist/audit-prompt.md](./dist/audit-prompt.md) | one-shot |
+> **Full install matrix with version pinning, uninstall, troubleshooting and direct git-clone paths:** [INSTALL.md](./INSTALL.md).
 
 ## Usage
 
@@ -178,15 +125,7 @@ The skill auto-activates on any of those triggers.
 
 ## Updating
 
-| Agent | Update command |
-|---|---|
-| Claude Code | `/plugin update seo-for-ai` |
-| Codex CLI | `/plugins` → seo-for-ai → Update |
-| Cursor | `/update-plugin seo-for-ai` |
-| Gemini CLI | `gemini extensions update seo-for-ai` |
-| Factory Droid | `droid plugin update seo-for-ai` |
-| OpenCode | clear cache + restart (see [.opencode/INSTALL.md](./.opencode/INSTALL.md)) |
-| Fallback installer | re-run the curl one-liner; existing files are preserved |
+Each plugin marketplace has its own `update` command — see [INSTALL.md](./INSTALL.md#updating). If you cloned directly via the agent-assisted prompt, `cd <skill-dir> && git pull`.
 
 ## Background
 

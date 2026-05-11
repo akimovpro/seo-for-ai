@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.3.1] — 2026-05-11
+
+### Added — easier install paths
+- `INSTALL.md` at repo root — comprehensive per-host install instructions in
+  one place: agent-assisted prompt, native plugin marketplaces, direct
+  git-clone paths (`~/.claude/skills/`, `~/.codex/skills/`,
+  `~/.openclaw/workspace/skills/`), shell installer, copy-paste prompt.
+  Also covers update and uninstall paths per host.
+- README now leads with the **agent-assisted install** prompt
+  (`Install the seo-for-ai skill for me: <URL>`) — works in any host with
+  filesystem access, no plugin manifest required. Pattern borrowed from
+  `titanwings/colleague-skill`.
+
+### Changed
+- README install section is now compact: agent-assisted → native marketplace
+  table → fallback installer → web copy-paste. Longer details live in
+  `INSTALL.md`.
+- Documented update / uninstall paths per host.
+
 ## [1.3.0] — 2026-05-11
 
 ### Restructure — native plugin systems first

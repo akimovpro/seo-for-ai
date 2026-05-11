@@ -1,6 +1,6 @@
 {
   "name": "seo-for-ai",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Audit and optimize websites for AI agent visibility (AEO/GEO) alongside classic technical SEO: bot-readable HTML, JSON-LD, robots.txt / bot policy, llms.txt, FAQ extractability, and the 6-step audit workflow.",
   "author": {
     "name": "Igor Akimov",
