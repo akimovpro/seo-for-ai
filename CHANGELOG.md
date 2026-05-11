@@ -1,5 +1,50 @@
 # Changelog
 
+## [1.3.0] — 2026-05-11
+
+### Restructure — native plugin systems first
+
+Switched to the idiomatic multi-agent layout (modeled on `obra/superpowers`):
+each agent that has a native plugin system gets its own manifest, and they
+all point at a single shared `skills/` and `commands/` tree. The fallback
+shell installer is now scoped to the few agents that **don't** have a plugin
+marketplace yet (Windsurf, Aider, Copilot, Antigravity).
+
+### Added — per-tool plugin manifests
+
+- `.codex-plugin/plugin.json` — Codex CLI plugin manifest (with `interface`
+  metadata for the in-product browser).
+- `.cursor-plugin/plugin.json` — Cursor plugin manifest.
+- `gemini-extension.json` + `GEMINI.md` — Gemini CLI extension
+  (`gemini extensions install <repo url>`).
+- `.opencode/INSTALL.md` — OpenCode install + pinning + troubleshooting.
+- `CLAUDE.md` — repo conventions for agents working on this codebase.
+
+### Moved
+
+- Skill source: `.claude/skills/seo-for-ai/` → `skills/seo-for-ai/`
+  (top-level shared by every plugin manifest). All manifests reference
+  `./skills/` and `./commands/`.
+
+### Changed
+
+- `install.sh` is now explicitly a **fallback** for agents without plugin
+  marketplaces. Removed Cursor / Codex / Claude paths from it (those use
+  their own native commands). Output banner makes the split explicit.
+- README rewritten with a per-tool install matrix (native command per agent
+  + fallback installer + ChatGPT copy-paste prompt).
+
+### Native install commands now documented
+
+| Agent | Command |
+|---|---|
+| Claude Code | `/plugin install seo-for-ai@seo-for-ai` |
+| Codex CLI | `/plugins` → seo-for-ai |
+| Cursor | `/add-plugin akimovpro/seo-for-ai` |
+| Gemini CLI | `gemini extensions install https://github.com/akimovpro/seo-for-ai` |
+| Factory Droid | `droid plugin install seo-for-ai@seo-for-ai` |
+| OpenCode | edit `opencode.json` plugin array |
+
 ## [1.2.1] — 2026-05-11
 
 ### Fixed

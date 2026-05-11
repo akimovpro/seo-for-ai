@@ -1,0 +1,45 @@
+{
+  "name": "seo-for-ai",
+  "version": "1.3.0",
+  "description": "Audit and optimize websites for AI agent visibility (AEO/GEO) alongside classic technical SEO: bot-readable HTML, JSON-LD, robots.txt / bot policy, llms.txt, FAQ extractability, and the 6-step audit workflow.",
+  "author": {
+    "name": "Igor Akimov",
+    "email": "akimov.pro@gmail.com",
+    "url": "https://t.me/SEO4AI"
+  },
+  "homepage": "https://github.com/akimovpro/seo-for-ai",
+  "repository": "https://github.com/akimovpro/seo-for-ai",
+  "license": "MIT",
+  "keywords": [
+    "seo",
+    "aeo",
+    "geo",
+    "ai-visibility",
+    "schema-org",
+    "json-ld",
+    "llms-txt",
+    "structured-data",
+    "robots-txt",
+    "bot-policy",
+    "ai-agents"
+  ],
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "interface": {
+    "displayName": "SEO for AI",
+    "shortDescription": "Audit & optimize sites for AI-agent visibility (AEO/GEO).",
+    "longDescription": "Modern SEO/AEO/GEO playbook as an agent skill — covers static-first render path, semantic HTML, JSON-LD templates, robots.txt / bot policy, Cloudflare AI-bot gotcha, 2 MB byte cap, FAQ extractability patterns, Bing Webmaster Tools, IndexNow, llms.txt, NLWeb, MCP, and the agent-payments roadmap (x402 / ACP / AP2 / UCP). Includes the `/seo-audit` slash command.",
+    "developerName": "Igor Akimov",
+    "category": "SEO",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "defaultPrompt": [
+      "Audit https://example.com for AI-agent visibility.",
+      "Review my JSON-LD on the pricing page.",
+      "Why isn't ChatGPT citing our docs?",
+      "Set up llms.txt for this SDK.",
+      "Check our robots.txt — Cloudflare might be blocking AI bots."
+    ],
+    "websiteURL": "https://github.com/akimovpro/seo-for-ai",
+    "brandColor": "#0EA5E9"
+  }
+}

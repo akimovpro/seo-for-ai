@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
-# seo-for-ai installer — drops AGENTS.md and tool-specific rules wherever the
-# user's coding agents will read them.
+# seo-for-ai installer — fallback for agents WITHOUT a native plugin system.
+#
+# Native install paths (do NOT use this installer for these):
+#   Claude Code     /plugin install seo-for-ai@seo-for-ai
+#   Codex CLI       /plugins
+#   Cursor          /add-plugin akimovpro/seo-for-ai
+#   Gemini CLI      gemini extensions install https://github.com/akimovpro/seo-for-ai
+#   Factory Droid   droid plugin install seo-for-ai@seo-for-ai
+#   OpenCode        edit opencode.json (see .opencode/INSTALL.md)
+#
+# This installer covers everything else (Antigravity reads AGENTS.md; Windsurf,
+# Copilot, Aider have no plugin marketplaces yet) and also lays down AGENTS.md
+# as a universal baseline.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash
-#   curl ... | bash -s -- --dry-run        # see what would happen
+#   curl ... | bash -s -- --dry-run        # preview only
 #   curl ... | bash -s -- --all            # write every supported format
-#   curl ... | bash -s -- --tool cursor    # just one tool
+#   curl ... | bash -s -- --tool windsurf  # just one
 #   curl ... | bash -s -- --global         # also write user-global locations
 #
-# Behavior:
-#   - AGENTS.md is ALWAYS written in the current directory. This is the
-#     universal baseline — read by Codex CLI, Antigravity, OpenCode, Devin,
-#     Jules, Continue, and by Cursor when you @-mention it. Harmless if a
-#     given tool doesn't read it.
-#   - Per-tool rule files (Cursor MDC, Windsurf, Copilot, Aider CONVENTIONS)
-#     are written only when the tool is detected on this machine — unless you
-#     pass --all or --tool.
-#   - With --global, also installs to user-wide locations (e.g.
-#     ~/.codex/AGENTS.md, ~/.cursor/rules/).
-#   - Safe by default: never overwrites an existing file.
+# Safe by default: never overwrites an existing file.
 
 set -eo pipefail
-# NB: not using `set -u` — when piped via curl|bash, BASH_SOURCE is unset.
+# NB: not using `set -u` — BASH_SOURCE is unset under a curl|bash pipe.
 
 REPO_RAW="https://raw.githubusercontent.com/akimovpro/seo-for-ai/main"
 
@@ -39,8 +40,8 @@ while [[ $# -gt 0 ]]; do
     --tool)    shift; ONLY="${1:-}" ;;
     --tool=*)  ONLY="${1#*=}" ;;
     -h|--help)
-      curl -fsSL "$REPO_RAW/install.sh" 2>/dev/null | sed -n '1,24p' \
-        || { sed -n '1,24p' "$0" 2>/dev/null; }
+      curl -fsSL "$REPO_RAW/install.sh" 2>/dev/null | sed -n '1,28p' \
+        || sed -n '1,28p' "$0" 2>/dev/null
       exit 0 ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
@@ -51,14 +52,13 @@ say()  { printf '\033[36m→\033[0m %s\n' "$*"; }
 warn() { printf '\033[33m!\033[0m %s\n' "$*" >&2; }
 ok()   { printf '\033[32m✓\033[0m %s\n' "$*"; }
 
-# Tool detection — each returns 'y' or 'n' on stdout.
-# (Explicit if/else avoids the && || precedence trap.)
+# Detection — each returns 'y' or 'n'. Explicit if/else (avoids && || trap).
 detect_codex() {
   if command -v codex >/dev/null 2>&1 || [[ -d "$HOME/.codex" ]]; then
     echo y; else echo n; fi
 }
-detect_cursor() {
-  if [[ -d ".cursor" ]] || [[ -d "$HOME/.cursor" ]] || [[ -d "/Applications/Cursor.app" ]] || command -v cursor >/dev/null 2>&1; then
+detect_antigravity() {
+  if [[ -d "/Applications/Antigravity.app" ]] || [[ -d "$HOME/.antigravity" ]] || [[ -d "$HOME/Library/Application Support/Antigravity" ]]; then
     echo y; else echo n; fi
 }
 detect_windsurf() {
@@ -66,9 +66,6 @@ detect_windsurf() {
     echo y; else echo n; fi
 }
 detect_copilot_repo() {
-  # Detect "this looks like a repo where Copilot would be in use" — strict
-  # signal so we don't drop .github/ into random folders. .git with a github
-  # remote, OR an existing .github/ directory.
   if [[ -d ".github" ]]; then echo y; return; fi
   if [[ -f ".git/config" ]] && grep -qE 'github\.com' .git/config 2>/dev/null; then
     echo y; return
@@ -79,24 +76,14 @@ detect_aider() {
   if command -v aider >/dev/null 2>&1 || [[ -e ".aider.conf.yml" ]]; then
     echo y; else echo n; fi
 }
-detect_antigravity() {
-  if [[ -d "/Applications/Antigravity.app" ]] || [[ -d "$HOME/.antigravity" ]] || [[ -d "$HOME/Library/Application Support/Antigravity" ]]; then
-    echo y; else echo n; fi
-}
-detect_claude() {
-  if command -v claude >/dev/null 2>&1 || [[ -d "$HOME/.claude" ]]; then
-    echo y; else echo n; fi
-}
 
 HAS_CODEX=$(detect_codex)
-HAS_CURSOR=$(detect_cursor)
+HAS_ANTIGRAVITY=$(detect_antigravity)
 HAS_WINDSURF=$(detect_windsurf)
 HAS_COPILOT=$(detect_copilot_repo)
 HAS_AIDER=$(detect_aider)
-HAS_ANTIGRAVITY=$(detect_antigravity)
-HAS_CLAUDE=$(detect_claude)
 
-# Decide whether to act for a given tool: --all > --tool > auto-detect.
+# --all > --tool > auto-detect
 should() {
   local tool="$1" detected="$2"
   [[ "$MODE" == "all" ]] && return 0
@@ -130,52 +117,40 @@ do_cp() {
 say "scope: $SCOPE  mode: $MODE  dry: $DRY  only: ${ONLY:-<auto>}"
 say "cwd: $(pwd)"
 cat <<EOF
-detected on this machine:
-  Codex CLI    : $HAS_CODEX      (reads AGENTS.md — covered)
+detected on this machine (this installer only handles agents WITHOUT a plugin marketplace):
+  Codex CLI    : $HAS_CODEX      (reads AGENTS.md — covered. Native: '/plugins')
   Antigravity  : $HAS_ANTIGRAVITY      (reads AGENTS.md — covered)
-  Cursor       : $HAS_CURSOR      (drops .cursor/rules/seo-for-ai.mdc)
   Windsurf     : $HAS_WINDSURF      (drops .windsurf/rules/seo-for-ai.md)
   Aider        : $HAS_AIDER      (drops CONVENTIONS.md)
-  GitHub repo  : $HAS_COPILOT      (drops .github/copilot-instructions.md for Copilot)
-  Claude Code  : $HAS_CLAUDE      (uses /plugin marketplace, not a file)
+  GitHub repo  : $HAS_COPILOT      (drops .github/copilot-instructions.md)
+
+agents WITH a native plugin marketplace — install via their own command, not this script:
+  Claude Code     /plugin install seo-for-ai@seo-for-ai
+  Codex CLI       /plugins
+  Cursor          /add-plugin akimovpro/seo-for-ai
+  Gemini CLI      gemini extensions install https://github.com/akimovpro/seo-for-ai
+  Factory Droid   droid plugin install seo-for-ai@seo-for-ai
+  OpenCode        edit opencode.json (see .opencode/INSTALL.md)
 
 EOF
 
-# 1. AGENTS.md — always. Covers Codex CLI, Antigravity, OpenCode, Devin,
-#    Jules, Continue, and Cursor's @-file workflow. Harmless to other tools.
+# 1. AGENTS.md — always. Universal baseline read by Codex CLI, Antigravity,
+#    OpenCode, Devin, Jules, Continue.
 do_cp AGENTS.md "./AGENTS.md"
 
-# 2. User-global (--global) — write rules where any project picks them up.
+# 2. User-global (--global) — for Codex CLI before they wire up the plugin
+#    marketplace properly.
 if [[ "$SCOPE" == "global" ]]; then
   say "writing user-global rules"
   do_cp AGENTS.md "$HOME/.codex/AGENTS.md"
-  do_cp dist/cursor/seo-for-ai.mdc "$HOME/.cursor/rules/seo-for-ai.mdc"
 fi
 
-# 3. Per-tool local rule files.
-should cursor   "$HAS_CURSOR"   && do_cp dist/cursor/seo-for-ai.mdc           "./.cursor/rules/seo-for-ai.mdc"
+# 3. Per-tool local rule files (fallback only).
 should windsurf "$HAS_WINDSURF" && do_cp dist/windsurf/seo-for-ai.md          "./.windsurf/rules/seo-for-ai.md"
 should copilot  "$HAS_COPILOT"  && do_cp dist/copilot/copilot-instructions.md "./.github/copilot-instructions.md"
 should aider    "$HAS_AIDER"    && do_cp AGENTS.md                            "./CONVENTIONS.md"
 
-# 4. Claude Code — plugin marketplace, not a file.
-if should claude "$HAS_CLAUDE"; then
-  if [[ $DRY -eq 1 ]]; then
-    echo "  would suggest: /plugin marketplace add akimovpro/seo-for-ai"
-  else
-    cat <<'EOF'
-
-  Claude Code installs via the plugin marketplace, not a file copy.
-  Run inside Claude Code:
-
-      /plugin marketplace add akimovpro/seo-for-ai
-      /plugin install seo-for-ai@seo-for-ai
-
-EOF
-  fi
-fi
-
-# 5. Wrap up.
+# 4. Wrap up.
 ok "done."
 if [[ $DRY -eq 1 ]]; then
   echo

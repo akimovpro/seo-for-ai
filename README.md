@@ -1,68 +1,111 @@
 # seo-for-ai
 
-> Claude Code plugin: audit & optimize websites for AI-agent visibility (AEO / GEO) alongside classic SEO.
+> Multi-agent plugin: audit & optimize websites for AI-agent visibility (AEO / GEO) alongside classic SEO. Works in Claude Code, Codex CLI, Cursor, Gemini CLI, OpenCode, Factory Droid, Antigravity, Aider, Windsurf, GitHub Copilot.
 
-53% of web traffic in 2025 is bots. AI agents (ChatGPT, Claude, Perplexity, Gemini) fetch sites with primitive HTTP clients — no JavaScript, no waiting for hydration, no rendering. Optimizing for them is mostly **going back to basics**: server-rendered HTML, semantic markup, structured data, fast bytes, clean bot policy.
+53% of 2025 web traffic is bots and AI agents (ChatGPT, Claude, Perplexity, Gemini, Copilot). They fetch with primitive HTTP clients (curl-class), don't execute JavaScript, and don't wait for hydration. Optimizing for them is mostly **going back to basics**: server-rendered HTML, semantic markup, structured data, fast bytes, clean bot policy.
 
-This skill packages the technical SEO playbook for that world into a single Claude Code skill — so when you ask Claude to "audit my site for AI visibility" or "review my JSON-LD" or "why isn't ChatGPT citing us", it knows what to check and what to fix.
-
-## What's inside
-
-- **Operating principles** — the 8 rules that govern modern AI-aware SEO (static beats dynamic, 2 MB byte cap, Bing is the AI substrate, no cloaking, etc.).
-- **6-step audit workflow** — discoverability → render path → semantic layer → content shape → page weight & timestamps → bot policy → measurement.
-- **JSON-LD templates** — Organization, WebSite + SearchAction, Product, FAQPage, HowTo, Article, BreadcrumbList, LocalBusiness, Review, SoftwareApplication, plus `@graph` linking patterns.
-- **Bot policy recipes** — 4 ready-to-use `robots.txt` patterns, full AI user-agent reference, Cloudflare AI-bot gotcha, AWS WAF rules, IP-range verification.
-- **Audit checklist** — 10-section flat checklist usable as a CI gate.
-- **Emerging standards** — `llms.txt`, Markdown content negotiation, NLWeb, Web MCP, agent-payment protocols (x402 / ACP / AP2 / UCP), Web Bot Auth / RSL.
+This repo packages that playbook as a portable agent skill — install it in whatever agent you use, and asking "audit my site for AI visibility" or "review my JSON-LD" gets a structured punch-list with concrete fixes.
 
 ## Install
 
-**Claude Code (most complete — includes the `/seo-audit` slash command):**
+Pick your agent. Native plugin systems first, fallback installer at the bottom for tools that don't have one yet.
+
+### Claude Code
 
 ```
 /plugin marketplace add akimovpro/seo-for-ai
 /plugin install seo-for-ai@seo-for-ai
 ```
 
-**Everything else (Codex CLI, Cursor, Windsurf, Copilot, Aider, Antigravity, …):**
+Includes the `/seo-audit` slash command.
 
-```sh
-# one-liner installer — auto-detects which agents this repo uses and drops
-# the right rules file in the right place. Safe: never overwrites.
-curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash
+### Codex CLI
 
-# or, target a specific tool:
-curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --tool cursor
-
-# or, user-global (Codex / Cursor):
-curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --global
-
-# dry-run first if you want to see what it would do:
-curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --dry-run
+```
+/plugins
 ```
 
-### Per-tool install matrix
+Then search for **seo-for-ai** and install. (Or add via marketplace URL: `https://github.com/akimovpro/seo-for-ai`.)
 
-| Tool | What lands where | One-shot audit |
+### Cursor
+
+```
+/add-plugin akimovpro/seo-for-ai
+```
+
+### Gemini CLI
+
+```
+gemini extensions install https://github.com/akimovpro/seo-for-ai
+```
+
+### Factory Droid
+
+```
+droid plugin marketplace add https://github.com/akimovpro/seo-for-ai
+droid plugin install seo-for-ai@seo-for-ai
+```
+
+### OpenCode
+
+Add to `~/.config/opencode/opencode.json` (or project-level):
+
+```json
+{
+  "plugin": ["seo-for-ai@git+https://github.com/akimovpro/seo-for-ai.git"]
+}
+```
+
+See [.opencode/INSTALL.md](./.opencode/INSTALL.md) for pinning, troubleshooting.
+
+### Antigravity (Google)
+
+Antigravity reads `AGENTS.md` from the repo root. Run the fallback installer below — it drops `AGENTS.md` in the current directory.
+
+### Windsurf, GitHub Copilot, Aider — fallback installer
+
+These don't have a plugin marketplace today. Use the one-liner installer; it
+auto-detects which agents you have, writes the right rule file in the right
+place, and never overwrites an existing file.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash
+
+# preview first:
+curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --dry-run
+
+# force every supported format:
+curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --all
+
+# also write user-global rules (~/.codex/AGENTS.md, ~/.cursor/rules/):
+curl -fsSL https://raw.githubusercontent.com/akimovpro/seo-for-ai/main/install.sh | bash -s -- --global
+```
+
+### ChatGPT web / any chat without a skill system
+
+Copy-paste the prompt from [dist/audit-prompt.md](./dist/audit-prompt.md) into the conversation, optionally substituting `<URL>` with the page you want audited.
+
+## Install matrix at a glance
+
+| Agent | Install command | What lands |
 |---|---|---|
-| **Claude Code** | `/plugin install seo-for-ai@seo-for-ai` (skill + `/seo-audit` command) | `/seo-audit <url>` |
-| **Codex CLI** | `AGENTS.md` in repo root, or `~/.codex/AGENTS.md` for global | paste [audit-prompt.md](./dist/audit-prompt.md) |
-| **Antigravity** (Google) | `AGENTS.md` in repo root | paste [audit-prompt.md](./dist/audit-prompt.md) |
-| **Cursor** | `.cursor/rules/seo-for-ai.mdc` | paste [audit-prompt.md](./dist/audit-prompt.md) |
-| **Windsurf** | `.windsurf/rules/seo-for-ai.md` | paste [audit-prompt.md](./dist/audit-prompt.md) |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | paste [audit-prompt.md](./dist/audit-prompt.md) |
-| **Aider** | `CONVENTIONS.md` + `aider --read CONVENTIONS.md` | paste [audit-prompt.md](./dist/audit-prompt.md) |
-| **OpenCode / Devin / Jules / Continue** | `AGENTS.md` (most read it) | paste [audit-prompt.md](./dist/audit-prompt.md) |
-
-The cross-tool baseline is `AGENTS.md` — the de-facto standard since ~mid-2025
-and read by Codex CLI, OpenCode, Devin, Jules, Aider (via CONVENTIONS), Cursor
-(via `@AGENTS.md`), Antigravity, and several others.
+| Claude Code | `/plugin install seo-for-ai@seo-for-ai` | full skill + `/seo-audit` |
+| Codex CLI | `/plugins` → seo-for-ai | full skill |
+| Cursor | `/add-plugin akimovpro/seo-for-ai` | full skill + commands |
+| Gemini CLI | `gemini extensions install <repo url>` | full skill via `GEMINI.md` |
+| OpenCode | edit `opencode.json` plugin array | full skill |
+| Factory Droid | `droid plugin marketplace add` | full skill |
+| Antigravity | fallback installer → `AGENTS.md` | universal baseline |
+| Windsurf | fallback installer → `.windsurf/rules/` | rules |
+| GitHub Copilot | fallback installer → `.github/copilot-instructions.md` | rules |
+| Aider | fallback installer → `CONVENTIONS.md` | rules + use `--read` |
+| ChatGPT / web | copy-paste [dist/audit-prompt.md](./dist/audit-prompt.md) | one-shot |
 
 ## Usage
 
 Two entry points:
 
-### A. Slash command (deterministic)
+### A. Slash command (Claude Code only)
 
 ```
 /seo-audit https://example.com           # URL audit
@@ -70,9 +113,7 @@ Two entry points:
 /seo-audit app/(marketing)/pricing/page.tsx   # template audit
 ```
 
-### B. Natural language (auto-triggered)
-
-Just ask Claude things like:
+### B. Natural language (every agent)
 
 - "Audit https://example.com for AI visibility."
 - "Review my JSON-LD on the pricing page."
@@ -103,20 +144,15 @@ The skill auto-activates on any of those triggers.
 - Cloudflare "Block AI scrapers" is ON — `cf-mitigated: challenge` returned
   for GPTBot UA. Robots.txt is irrelevant when the request never reaches origin.
   evidence: response header `cf-mitigated: challenge`, status 403.
-  fix: Cloudflare → Security → Bots → AI Crawl Control → Allow (or set
-  per-bot rules for OAI-SearchBot, PerplexityBot, ClaudeBot).
+  fix: Cloudflare → Security → Bots → AI Crawl Control → Allow.
 - No `<link rel="canonical">` — duplicate-content risk on trailing-slash variants.
-  evidence: missing from <head>.
   fix: add `<link rel="canonical" href="https://example.com/...">` per route.
 
 ### Medium (best-practice gap)
 - sitemap.xml has identical `<lastmod>` (build timestamp) on all 1,847 URLs.
-  fix: source `lastmod` from CMS / git per route; bots throttle recrawl when
-  every URL claims to update on every deploy.
+  fix: source `lastmod` from CMS / git per route.
 - No FAQPage JSON-LD on the pricing page; FAQ section exists but only renders
   on click — bots see the questions, not the answers.
-  fix: render <details open> by default, add FAQPage JSON-LD (see
-  references/structured-data.md).
 
 ### Watch (emerging standards)
 - No /llms.txt — site looks developer-facing (SDK + docs), this would help.
@@ -128,24 +164,39 @@ The skill auto-activates on any of those triggers.
 - hreflang correct on /ru/ and /en/ variants.
 ```
 
-(That's a real-shape sample — your output will differ by site.)
+(Sample shape — your output will differ.)
 
-## Use without the plugin
+## What's inside
 
-Clone into `~/.claude/skills/`:
+- **`skills/seo-for-ai/SKILL.md`** — 8 operating principles, 6-step audit workflow, anti-patterns, emerging standards roadmap.
+- **`skills/seo-for-ai/references/structured-data.md`** — JSON-LD templates: Organization, WebSite + SearchAction, Product, FAQPage, HowTo, Article, BreadcrumbList, LocalBusiness, Review, SoftwareApplication, `@graph` linking.
+- **`skills/seo-for-ai/references/bot-policy.md`** — `robots.txt` recipes, full AI user-agent reference, Cloudflare AI-bot gotcha, AWS WAF rules, llms.txt spec, IP-range verification.
+- **`skills/seo-for-ai/references/checklist.md`** — 10-section flat audit checklist, usable as a CI gate.
+- **`commands/seo-audit.md`** — `/seo-audit` slash command (Claude Code, soon other plugin-marketplace agents).
+- **`dist/`** — fallback artefacts: `audit-prompt.md` for copy-paste use, plus tool-specific rule files for Windsurf / Copilot / Cursor.
+- **`AGENTS.md`** — universal baseline rules picked up by Codex CLI, Antigravity, OpenCode, Devin, Jules, Continue.
 
-```sh
-cd ~/.claude/skills
-git clone https://github.com/akimovpro/seo-for-ai.git
-```
+## Updating
 
-The skill at `seo-for-ai/.claude/skills/seo-for-ai/` will work either way.
+| Agent | Update command |
+|---|---|
+| Claude Code | `/plugin update seo-for-ai` |
+| Codex CLI | `/plugins` → seo-for-ai → Update |
+| Cursor | `/update-plugin seo-for-ai` |
+| Gemini CLI | `gemini extensions update seo-for-ai` |
+| Factory Droid | `droid plugin update seo-for-ai` |
+| OpenCode | clear cache + restart (see [.opencode/INSTALL.md](./.opencode/INSTALL.md)) |
+| Fallback installer | re-run the curl one-liner; existing files are preserved |
 
 ## Background
 
-Built from the talk **"SEO и AI: оптимизация сайтов для поисковых агентов"** by Igor Akimov (May 2025) — slides + Q&A condensed into actionable Claude-ready guidance.
+Built from the talk **"SEO и AI: оптимизация сайтов для поисковых агентов"** by Igor Akimov (May 2025) — slides + Q&A condensed into actionable agent-ready guidance.
 
 Follow the Telegram channel for ongoing updates: [@SEO4AI](https://t.me/SEO4AI).
+
+## Contributing
+
+See [CLAUDE.md](./CLAUDE.md) for repo conventions if you're working on this with an AI agent. The canonical skill source is `skills/seo-for-ai/`; the rest is derived.
 
 ## License
 

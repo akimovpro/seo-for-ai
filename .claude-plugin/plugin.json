@@ -1,7 +1,7 @@
 {
   "name": "seo-for-ai",
+  "version": "1.3.0",
   "description": "Audit and optimize websites for AI agent visibility (AEO/GEO) alongside classic SEO. Use when asked to audit a page/site for AI agents, check AI-readiness, review JSON-LD / Schema.org markup, fix bot policy, set up llms.txt, debug why ChatGPT/Claude/Perplexity don't cite the site, check Cloudflare bot rules, or implement AI-friendly content patterns (FAQ, comparison tables, steps, proof links). Triggers: SEO, AEO, GEO, AI visibility, AI-видимость, оптимизация под поисковых агентов, llms.txt, structured data, schema.org, robots.txt for AI bots, Bing Webmaster Tools, IndexNow.",
-  "version": "1.2.1",
   "author": {
     "name": "Igor Akimov",
     "email": "akimov.pro@gmail.com",
@@ -23,6 +23,6 @@
     "bot-policy",
     "ai-agents"
   ],
-  "skills": ["./.claude/skills/seo-for-ai"],
-  "commands": ["./commands"]
+  "skills": "./skills/",
+  "commands": "./commands/"
 }

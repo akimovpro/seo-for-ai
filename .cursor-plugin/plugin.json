@@ -1,0 +1,26 @@
+{
+  "name": "seo-for-ai",
+  "displayName": "SEO for AI",
+  "description": "Audit & optimize websites for AI-agent visibility (AEO/GEO). Triggers on SEO / AEO / GEO / JSON-LD / structured-data / robots.txt / llms.txt / AI-citation work.",
+  "version": "1.3.0",
+  "author": {
+    "name": "Igor Akimov",
+    "email": "akimov.pro@gmail.com"
+  },
+  "homepage": "https://github.com/akimovpro/seo-for-ai",
+  "repository": "https://github.com/akimovpro/seo-for-ai",
+  "license": "MIT",
+  "keywords": [
+    "seo",
+    "aeo",
+    "geo",
+    "ai-visibility",
+    "schema-org",
+    "json-ld",
+    "llms-txt",
+    "structured-data",
+    "robots-txt"
+  ],
+  "skills": "./skills/",
+  "commands": "./commands/"
+}

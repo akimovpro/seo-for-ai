@@ -115,8 +115,8 @@ If a section has nothing, write "none found" — don't pad.
 ## Reference (open in a new tab if you need a deep dive)
 
 - Full skill: <https://github.com/akimovpro/seo-for-ai>
-- JSON-LD templates: <https://github.com/akimovpro/seo-for-ai/blob/main/.claude/skills/seo-for-ai/references/structured-data.md>
-- Bot policy recipes: <https://github.com/akimovpro/seo-for-ai/blob/main/.claude/skills/seo-for-ai/references/bot-policy.md>
-- Full checklist: <https://github.com/akimovpro/seo-for-ai/blob/main/.claude/skills/seo-for-ai/references/checklist.md>
+- JSON-LD templates: <https://github.com/akimovpro/seo-for-ai/blob/main/skills/seo-for-ai/references/structured-data.md>
+- Bot policy recipes: <https://github.com/akimovpro/seo-for-ai/blob/main/skills/seo-for-ai/references/bot-policy.md>
+- Full checklist: <https://github.com/akimovpro/seo-for-ai/blob/main/skills/seo-for-ai/references/checklist.md>
 
 Begin.
