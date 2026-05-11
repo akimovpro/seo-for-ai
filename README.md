@@ -22,7 +22,21 @@ This skill packages the technical SEO playbook for that world into a single Clau
 /plugin install seo-for-ai@seo-for-ai
 ```
 
-Then just ask Claude things like:
+## Usage
+
+Two entry points:
+
+### A. Slash command (deterministic)
+
+```
+/seo-audit https://example.com           # URL audit
+/seo-audit                                # audit current codebase
+/seo-audit app/(marketing)/pricing/page.tsx   # template audit
+```
+
+### B. Natural language (auto-triggered)
+
+Just ask Claude things like:
 
 - "Audit https://example.com for AI visibility."
 - "Review my JSON-LD on the pricing page."
@@ -32,6 +46,53 @@ Then just ask Claude things like:
 - "Make this FAQ extractable by AI."
 
 The skill auto-activates on any of those triggers.
+
+## What the output looks like
+
+```
+> /seo-audit https://example.com
+
+[URL audit mode] Fetching with GPTBot user-agent…
+
+## seo-for-ai audit — https://example.com
+
+### Blocker (bot can't read primary content)
+- Page is CSR-only — raw HTML is `<div id="root"></div>` plus 1.2 MB of JS;
+  no title, no h1, no body copy without JS execution.
+  evidence: `curl -A GPTBot` returns 4 KB HTML, 0 text nodes outside <script>.
+  fix: enable SSR or pre-rendering (Next.js App Router → `export const dynamic =
+  'force-static'` for marketing routes; or add prerender.io in front).
+
+### High (will materially hurt citation rate)
+- Cloudflare "Block AI scrapers" is ON — `cf-mitigated: challenge` returned
+  for GPTBot UA. Robots.txt is irrelevant when the request never reaches origin.
+  evidence: response header `cf-mitigated: challenge`, status 403.
+  fix: Cloudflare → Security → Bots → AI Crawl Control → Allow (or set
+  per-bot rules for OAI-SearchBot, PerplexityBot, ClaudeBot).
+- No `<link rel="canonical">` — duplicate-content risk on trailing-slash variants.
+  evidence: missing from <head>.
+  fix: add `<link rel="canonical" href="https://example.com/...">` per route.
+
+### Medium (best-practice gap)
+- sitemap.xml has identical `<lastmod>` (build timestamp) on all 1,847 URLs.
+  fix: source `lastmod` from CMS / git per route; bots throttle recrawl when
+  every URL claims to update on every deploy.
+- No FAQPage JSON-LD on the pricing page; FAQ section exists but only renders
+  on click — bots see the questions, not the answers.
+  fix: render <details open> by default, add FAQPage JSON-LD (see
+  references/structured-data.md).
+
+### Watch (emerging standards)
+- No /llms.txt — site looks developer-facing (SDK + docs), this would help.
+- No `Accept: text/markdown` content negotiation on /docs/*.
+
+### What's already correct
+- Open Graph tags present and accurate.
+- robots.txt references sitemap.xml.
+- hreflang correct on /ru/ and /en/ variants.
+```
+
+(That's a real-shape sample — your output will differ by site.)
 
 ## Use without the plugin
 
